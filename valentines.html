@@ -282,6 +282,8 @@
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
+            z-index: 100;
+            transform: translateZ(0);
         }
 
         .game-instruction {
@@ -309,8 +311,8 @@
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(233,30,99,0.4);
             transition: transform 0.1s;
-            border: none;
-            z-index: 1000;
+            border: 3px solid white;
+            z-index: 9999;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
             pointer-events: auto;
