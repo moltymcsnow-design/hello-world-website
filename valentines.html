@@ -145,7 +145,7 @@
             min-height: 100vh;
             padding: 20px;
             position: relative;
-            z-index: 10;
+            z-index: 50;
         }
 
         .recipient-name {
@@ -201,12 +201,11 @@
             width: 100%;
             max-width: 500px;
             height: 400px;
-            background: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.5);
             border-radius: 20px;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
             margin: 20px 0;
             cursor: crosshair;
             z-index: 100;
@@ -223,6 +222,7 @@
             font-weight: 600;
             pointer-events: none;
             animation: pulse 2s infinite;
+            z-index: 10;
         }
 
         @keyframes pulse {
@@ -237,6 +237,8 @@
             font-size: 1.5rem;
             color: #e91e63;
             font-weight: bold;
+            z-index: 10;
+            pointer-events: none;
         }
 
         /* Falling Hearts */
@@ -261,8 +263,8 @@
         }
 
         @keyframes fall {
-            from { transform: translateY(-50px) rotate(0deg); }
-            to { transform: translateY(420px) rotate(360deg); }
+            from { transform: translateY(-60px) rotate(0deg); }
+            to { transform: translateY(460px) rotate(360deg); }
         }
 
         @keyframes caught {
@@ -556,12 +558,21 @@
             const heart = document.createElement('div');
             heart.className = 'falling-heart';
             heart.textContent = ['❤️', '💖', '💕', '💗', '💝'][Math.floor(Math.random() * 5)];
-            heart.style.left = Math.random() * (gameArea.offsetWidth - 40) + 'px';
-            heart.style.animationDuration = (3 + Math.random() * 2) + 's';
+            heart.style.left = Math.random() * (gameArea.offsetWidth - 50) + 'px';
+            heart.style.top = '-50px';
+            heart.style.animationDuration = (4 + Math.random() * 2) + 's';
+            heart.style.zIndex = '1000';
             
-            heart.onclick = function() {
+            heart.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 catchHeart(this);
-            };
+            });
+            
+            heart.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                catchHeart(this);
+            });
             
             gameArea.appendChild(heart);
             
@@ -569,7 +580,7 @@
                 if (heart.parentNode) {
                     heart.remove();
                 }
-            }, 5000);
+            }, 6000);
         }
 
         // Catch heart
