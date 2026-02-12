@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will You Be My Valentine? 💝</title>
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z2XY8N25QD"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'GA_MEASUREMENT_ID');
+        gtag('config', 'G-Z2XY8N25QD');
     </script>
     <style>
         * {
@@ -32,8 +32,9 @@
             position: fixed;
             font-size: 20px;
             animation: float 15s infinite ease-in-out;
-            opacity: 0.3;
+            opacity: 0.2;
             pointer-events: none;
+            z-index: 1;
         }
 
         @keyframes float {
@@ -208,6 +209,7 @@
             backdrop-filter: blur(10px);
             margin: 20px 0;
             cursor: crosshair;
+            z-index: 100;
         }
 
         .instruction {
@@ -245,6 +247,9 @@
             animation: fall linear;
             user-select: none;
             transition: transform 0.1s;
+            z-index: 200;
+            opacity: 1;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
         }
 
         .falling-heart:hover {
@@ -409,7 +414,7 @@
             <div style="font-size: 4rem; margin-bottom: 20px;">💝</div>
             <h1>Create Your Valentine's Surprise</h1>
             <p>Enter the name of your special someone</p>
-            <input type="text" id="recipientName" placeholder="e.g., Anjali" autocomplete="name">
+            <input type="text" id="recipientName" placeholder="Your Valentine's Name" autocomplete="name">
             <button onclick="generateLink()">Create Magic Link ✨</button>
             
             <div class="share-section" id="shareSection">
