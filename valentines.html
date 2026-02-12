@@ -24,17 +24,16 @@
             min-height: 100vh;
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
             overflow-x: hidden;
-            position: relative;
         }
 
-        /* Floating background hearts */
+        /* Background hearts */
         .bg-heart {
             position: fixed;
             font-size: 20px;
             animation: float 15s infinite ease-in-out;
-            opacity: 0.2;
+            opacity: 0.15;
             pointer-events: none;
-            z-index: 1;
+            z-index: 0;
         }
 
         @keyframes float {
@@ -42,38 +41,40 @@
             50% { transform: translateY(-100px) rotate(180deg); }
         }
 
-        /* Name Input Section */
-        #nameInputSection {
+        /* SETUP SCREEN */
+        #setupScreen {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
-            text-align: center;
+            position: relative;
+            z-index: 10;
         }
 
-        .input-container {
-            background: rgba(255,255,255,0.9);
+        .setup-box {
+            background: white;
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
             max-width: 400px;
             width: 100%;
+            text-align: center;
         }
 
-        .input-container h1 {
+        .setup-box h1 {
             color: #e91e63;
             margin-bottom: 10px;
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
 
-        .input-container p {
+        .setup-box p {
             color: #666;
             margin-bottom: 30px;
         }
 
-        .input-container input {
+        .setup-box input {
             width: 100%;
             padding: 15px;
             font-size: 1.1rem;
@@ -83,7 +84,7 @@
             text-align: center;
         }
 
-        .input-container button {
+        .setup-box button {
             width: 100%;
             padding: 15px;
             font-size: 1.1rem;
@@ -92,95 +93,72 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.3s;
         }
 
-        .input-container button:hover {
-            transform: scale(1.05);
-        }
-
-        .share-section {
+        .share-box {
             margin-top: 20px;
             padding: 20px;
-            background: rgba(255,255,255,0.5);
+            background: #f5f5f5;
             border-radius: 10px;
             display: none;
         }
 
-        .share-section.show {
+        .share-box.show {
             display: block;
         }
 
-        .share-url {
+        .url-box {
             background: white;
             padding: 10px;
             border-radius: 5px;
             word-break: break-all;
             font-family: monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin: 10px 0;
             border: 1px solid #ddd;
         }
 
-        .copy-btn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .copy-btn:hover {
-            background: #45a049;
-        }
-
-        /* Main Game Container */
-        #gameContainer {
+        /* GAME SCREEN */
+        #gameScreen {
             display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             min-height: 100vh;
             padding: 20px;
             position: relative;
-            z-index: 50;
+            z-index: 10;
         }
 
-        .recipient-name {
-            font-size: 2.5rem;
-            color: #e91e63;
-            margin-bottom: 10px;
+        .game-header {
             text-align: center;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #ad1457;
             margin-bottom: 20px;
-            text-align: center;
         }
 
-        /* Love Meter */
-        .meter-container {
+        .recipient {
+            font-size: 2.2rem;
+            color: #e91e63;
+            font-weight: bold;
+        }
+
+        .game-subtitle {
+            color: #ad1457;
+            margin-top: 10px;
+        }
+
+        .progress-container {
             width: 300px;
             height: 40px;
-            background: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.6);
             border-radius: 20px;
+            margin: 20px auto;
             overflow: hidden;
-            margin: 20px 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .meter-fill {
+        .progress-bar {
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, #ff6b9d, #c44569);
             border-radius: 20px;
-            transition: width 0.5s ease-out;
+            transition: width 0.3s;
             display: flex;
             align-items: center;
             justify-content: flex-end;
@@ -189,512 +167,333 @@
             font-weight: bold;
         }
 
-        .meter-label {
-            text-align: center;
-            color: #880e4f;
-            font-weight: 600;
-            margin-top: 5px;
-        }
-
-        /* Game Area */
-        #gameArea {
+        .game-area {
             width: 100%;
             max-width: 500px;
             height: 400px;
-            background: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.6);
             border-radius: 20px;
+            margin: 0 auto;
             position: relative;
-            overflow: visible;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            margin: 20px 0;
-            cursor: crosshair;
-            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
         }
 
-        .instruction {
+        .game-text {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
             color: #880e4f;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
             pointer-events: none;
-            animation: pulse 2s infinite;
-            z-index: 10;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.05); }
-        }
-
-        .score-display {
+        .score {
             position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.5rem;
+            top: 15px;
+            right: 20px;
+            font-size: 1.4rem;
             color: #e91e63;
             font-weight: bold;
-            z-index: 10;
             pointer-events: none;
         }
 
-        /* Falling Hearts */
-        .falling-heart {
+        /* CLICKABLE HEART */
+        .heart {
             position: absolute;
-            font-size: 30px;
+            font-size: 36px;
             cursor: pointer;
-            animation: fall linear;
             user-select: none;
             transition: transform 0.1s;
-            z-index: 200;
-            opacity: 1;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            z-index: 100;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .falling-heart:hover {
-            transform: scale(1.3);
+        .heart:active {
+            transform: scale(1.4);
         }
 
-        .falling-heart.caught {
-            animation: caught 0.5s ease-out forwards;
-        }
-
-        @keyframes fall {
-            from { transform: translateY(-60px) rotate(0deg); }
-            to { transform: translateY(460px) rotate(360deg); }
-        }
-
-        @keyframes caught {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.8; }
-            100% { transform: scale(0) rotate(720deg); opacity: 0; }
-        }
-
-        /* Valentine Question */
-        #valentineQuestion {
+        /* QUESTION SCREEN */
+        #questionScreen {
             display: none;
             text-align: center;
-            animation: fadeIn 1s ease-out;
+            padding: 40px 20px;
         }
 
-        .question-text {
-            font-size: 2.5rem;
+        .big-question {
+            font-size: 2.2rem;
             color: #c2185b;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            animation: heartBeat 1.5s infinite;
         }
 
-        @keyframes heartBeat {
-            0%, 100% { transform: scale(1); }
-            14% { transform: scale(1.1); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.1); }
-            70% { transform: scale(1); }
-        }
-
-        .buttons-container {
+        .btn-row {
             display: flex;
             gap: 30px;
             justify-content: center;
             flex-wrap: wrap;
             position: relative;
-            min-height: 100px;
+            min-height: 80px;
         }
 
-        .btn {
-            padding: 15px 40px;
-            font-size: 1.5rem;
+        .big-btn {
+            padding: 20px 50px;
+            font-size: 1.8rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.3s ease;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
 
         .btn-yes {
             background: linear-gradient(135deg, #ff6b9d, #c44569);
             color: white;
-            animation: pulse 2s infinite;
-        }
-
-        .btn-yes:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 30px rgba(255, 107, 157, 0.5);
         }
 
         .btn-no {
             background: #e0e0e0;
             color: #666;
-            position: relative;
         }
 
-        /* Success Screen */
+        /* SUCCESS SCREEN */
         #successScreen {
             display: none;
             text-align: center;
-            animation: fadeIn 1s ease-out;
+            padding: 60px 20px;
         }
 
-        .success-emoji {
-            font-size: 6rem;
-            animation: bounce 1s infinite;
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
         }
 
-        .success-text {
+        .success-title {
             font-size: 2rem;
             color: #c2185b;
-            margin: 20px 0;
+            margin-bottom: 20px;
             font-weight: bold;
         }
 
-        .success-message {
-            font-size: 1.3rem;
+        .success-msg {
+            font-size: 1.2rem;
             color: #880e4f;
             max-width: 500px;
-            margin: 0 auto;
+            margin: 0 auto 30px;
             line-height: 1.6;
         }
 
-        .sender-name {
-            margin-top: 30px;
-            font-size: 1.2rem;
-            color: #666;
-            font-style: italic;
-        }
-
-        /* Confetti */
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: #f00;
-            animation: confetti-fall 3s linear forwards;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        @keyframes confetti-fall {
-            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        /* Responsive */
         @media (max-width: 600px) {
-            .recipient-name { font-size: 1.8rem; }
-            .subtitle { font-size: 1rem; }
-            .question-text { font-size: 1.8rem; }
-            .btn { font-size: 1.2rem; padding: 12px 30px; }
-            .input-container { padding: 30px 20px; }
-            .input-container h1 { font-size: 1.5rem; }
+            .recipient { font-size: 1.6rem; }
+            .big-question { font-size: 1.6rem; }
+            .big-btn { font-size: 1.4rem; padding: 15px 35px; }
         }
     </style>
 </head>
 <body>
-    <!-- Background floating hearts -->
+    <!-- Background hearts -->
     <div id="bgHearts"></div>
 
-    <!-- Name Input Section -->
-    <div id="nameInputSection">
-        <div class="input-container">
-            <div style="font-size: 4rem; margin-bottom: 20px;">💝</div>
-            <h1>Create Your Valentine's Surprise</h1>
-            <p>Enter the name of your special someone</p>
-            <input type="text" id="recipientName" placeholder="Your Valentine's Name" autocomplete="name">
-            <button onclick="generateLink()">Create Magic Link ✨</button>
+    <!-- SETUP SCREEN -->
+    <div id="setupScreen">
+        <div class="setup-box">
+            <div style="font-size: 4rem; margin-bottom: 15px;">💝</div>
+            <h1>Create Your Valentine Surprise</h1>
+            <p>Who is this for?</p>
+            <input type="text" id="nameInput" placeholder="Enter their name">
+            <button onclick="createLink()">✨ Create Link</button>
             
-            <div class="share-section" id="shareSection">
-                <p style="color: #666; margin-bottom: 10px;">Share this link with your Valentine:</p>
-                <div class="share-url" id="shareUrl"></div>
-                <button class="copy-btn" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
-                <p id="copyMessage" style="color: #4CAF50; margin-top: 10px; display: none;">✅ Copied!</p>
+            <div class="share-box" id="shareBox">
+                <p style="color: #666; margin-bottom: 10px;">Share this link:</p>
+                <div class="url-box" id="urlBox"></div>
+                <button onclick="copyLink()" style="background: #4CAF50; margin-top: 10px;">📋 Copy</button>
+                <p id="copiedText" style="color: #4CAF50; margin-top: 10px; display: none;">Copied!</p>
             </div>
         </div>
     </div>
 
-    <!-- Main Game Container -->
-    <div id="gameContainer">
-        <div class="recipient-name" id="displayRecipientName">Hey You! 💕</div>
-        <p class="subtitle">Catch the falling hearts to unlock the question!</p>
-        
-        <!-- Love Meter -->
-        <div class="meter-container">
-            <div class="meter-fill" id="loveMeter">0%</div>
-        </div>
-        <div class="meter-label">Love Meter 💝</div>
-
-        <!-- Game Area -->
-        <div id="gameArea">
-            <div class="instruction" id="instruction">Click the hearts! ❤️</div>
-            <div class="score-display" id="scoreDisplay">0/10</div>
+    <!-- GAME SCREEN -->
+    <div id="gameScreen">
+        <div class="game-header">
+            <div class="recipient" id="recipientName">Hey! 💕</div>
+            <div class="game-subtitle">Catch 10 hearts to unlock the question!</div>
         </div>
 
-        <!-- Valentine Question -->
-        <div id="valentineQuestion">
-            <div class="question-text">Will you be my Valentine? 🌹</div>
-            <div class="buttons-container">
-                <button class="btn btn-yes" onclick="sayYes()">YES! 💖</button>
-                <button class="btn btn-no" id="noBtn" onmouseover="moveNoButton()">No 🙈</button>
-            </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">0%</div>
         </div>
 
-        <!-- Success Screen -->
-        <div id="successScreen">
-            <div class="success-emoji">🥰💕🎉</div>
-            <div class="success-text">Yay! You said YES!</div>
-            <div class="success-message">
-                You're the cutest! Let's make this Valentine's special! 💝<br><br>
-                P.S. - I knew you'd say yes... the "No" button was just for decoration 😉
-            </div>
-            <div class="sender-name" id="senderNameDisplay"></div>
+        <div class="game-area" id="gameArea">
+            <div class="game-text" id="gameText">Click the hearts! ❤️</div>
+            <div class="score" id="scoreDisplay">0/10</div>
+        </div>
+    </div>
+
+    <!-- QUESTION SCREEN -->
+    <div id="questionScreen">
+        <div class="big-question">Will you be my Valentine? 🌹</div>
+        <div class="btn-row">
+            <button class="big-btn btn-yes" onclick="yesClicked()">YES! 💖</button>
+            <button class="big-btn btn-no" id="noBtn" onmouseover="moveNo()">No 🙈</button>
+        </div>
+    </div>
+
+    <!-- SUCCESS SCREEN -->
+    <div id="successScreen">
+        <div class="success-icon">🥰💕🎉</div>
+        <div class="success-title">Yay! You said YES!</div>
+        <div class="success-msg">
+            You're amazing! Let's make this Valentine's special! 💝<br><br>
+            (I knew you'd say yes... the "No" button never had a chance 😉)
         </div>
     </div>
 
     <script>
-        // Get name from URL params
-        const urlParams = new URLSearchParams(window.location.search);
-        const nameFromUrl = urlParams.get('name');
-        const senderFromUrl = urlParams.get('from');
+        // Get name from URL
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get('name');
 
-        // If name is in URL, show game directly
-        if (nameFromUrl) {
-            document.getElementById('nameInputSection').style.display = 'none';
-            document.getElementById('gameContainer').style.display = 'flex';
-            document.getElementById('displayRecipientName').textContent = `Hey ${decodeURIComponent(nameFromUrl)}! 💕`;
+        // If name exists, show game
+        if (name) {
+            document.getElementById('setupScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            document.getElementById('recipientName').textContent = 'Hey ' + decodeURIComponent(name) + '! 💕';
             
-            // Track page view
+            // Track view
             if (typeof gtag !== 'undefined') {
-                gtag('event', 'page_view', {
-                    'page_title': 'Valentine Game - ' + nameFromUrl,
-                    'page_location': window.location.href
-                });
+                gtag('event', 'game_view', { 'name': name });
             }
             
-            initGame();
+            startGame();
         }
-
-        // Game variables
-        let score = 0;
-        const targetScore = 10;
-        let gameActive = true;
-        let heartInterval;
 
         // Create background hearts
         function createBgHearts() {
             const container = document.getElementById('bgHearts');
             const hearts = ['💕', '💖', '💗', '💓', '💝'];
-            
-            for (let i = 0; i < 20; i++) {
-                const heart = document.createElement('div');
-                heart.className = 'bg-heart';
-                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-                heart.style.left = Math.random() * 100 + '%';
-                heart.style.animationDelay = Math.random() * 15 + 's';
-                heart.style.animationDuration = (10 + Math.random() * 10) + 's';
-                container.appendChild(heart);
+            for (let i = 0; i < 15; i++) {
+                const h = document.createElement('div');
+                h.className = 'bg-heart';
+                h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                h.style.left = Math.random() * 100 + '%';
+                h.style.animationDelay = Math.random() * 15 + 's';
+                h.style.animationDuration = (12 + Math.random() * 8) + 's';
+                container.appendChild(h);
             }
         }
+        createBgHearts();
 
-        // Generate shareable link
-        function generateLink() {
-            const name = document.getElementById('recipientName').value.trim();
-            if (!name) {
+        // Setup functions
+        function createLink() {
+            const n = document.getElementById('nameInput').value.trim();
+            if (!n) {
                 alert('Please enter a name!');
                 return;
             }
+            const url = window.location.origin + window.location.pathname + '?name=' + encodeURIComponent(n);
+            document.getElementById('urlBox').textContent = url;
+            document.getElementById('shareBox').classList.add('show');
             
-            const baseUrl = window.location.origin + window.location.pathname;
-            const shareableUrl = `${baseUrl}?name=${encodeURIComponent(name)}`;
-            
-            document.getElementById('shareUrl').textContent = shareableUrl;
-            document.getElementById('shareSection').classList.add('show');
-            
-            // Track link generation
             if (typeof gtag !== 'undefined') {
-                gtag('event', 'generate_link', {
-                    'recipient_name': name
-                });
+                gtag('event', 'link_created', { 'name': n });
             }
         }
 
-        // Copy to clipboard
-        function copyToClipboard() {
-            const url = document.getElementById('shareUrl').textContent;
-            navigator.clipboard.writeText(url).then(() => {
-                document.getElementById('copyMessage').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('copyMessage').style.display = 'none';
-                }, 2000);
-            });
+        function copyLink() {
+            navigator.clipboard.writeText(document.getElementById('urlBox').textContent);
+            document.getElementById('copiedText').style.display = 'block';
+            setTimeout(() => document.getElementById('copiedText').style.display = 'none', 2000);
         }
 
-        // Initialize game
-        function initGame() {
-            createBgHearts();
-            heartInterval = setInterval(createHeart, 800);
+        // Game variables
+        let caught = 0;
+        const target = 10;
+        let gameInterval;
+
+        function startGame() {
+            gameInterval = setInterval(spawnHeart, 1000);
         }
 
-        // Create falling heart
-        function createHeart() {
-            if (!gameActive) return;
+        function spawnHeart() {
+            if (caught >= target) return;
             
-            const gameArea = document.getElementById('gameArea');
+            const area = document.getElementById('gameArea');
             const heart = document.createElement('div');
-            heart.className = 'falling-heart';
+            heart.className = 'heart';
             heart.textContent = ['❤️', '💖', '💕', '💗', '💝'][Math.floor(Math.random() * 5)];
-            heart.style.left = Math.random() * (gameArea.offsetWidth - 50) + 'px';
-            heart.style.top = '-50px';
-            heart.style.animationDuration = (4 + Math.random() * 2) + 's';
-            heart.style.zIndex = '1000';
             
-            heart.addEventListener('click', function(e) {
-                e.preventDefault();
+            // Random position within game area
+            const x = Math.random() * (area.offsetWidth - 50);
+            const y = Math.random() * (area.offsetHeight - 50);
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+            
+            // Click handler
+            heart.onclick = function(e) {
                 e.stopPropagation();
                 catchHeart(this);
-            });
+            };
             
-            heart.addEventListener('touchstart', function(e) {
+            // Touch handler for mobile
+            heart.ontouchstart = function(e) {
                 e.preventDefault();
                 catchHeart(this);
-            });
+            };
             
-            gameArea.appendChild(heart);
+            area.appendChild(heart);
             
+            // Remove after 3 seconds
             setTimeout(() => {
-                if (heart.parentNode) {
-                    heart.remove();
-                }
-            }, 6000);
+                if (heart.parentNode) heart.remove();
+            }, 3000);
         }
 
-        // Catch heart
         function catchHeart(heart) {
-            if (!gameActive || heart.classList.contains('caught')) return;
+            heart.remove();
+            caught++;
             
-            heart.classList.add('caught');
-            score++;
-            updateMeter();
+            // Update progress
+            const pct = (caught / target) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressBar').textContent = Math.round(pct) + '%';
+            document.getElementById('scoreDisplay').textContent = caught + '/' + target;
             
-            setTimeout(() => heart.remove(), 500);
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'heart_caught', { 'count': caught });
+            }
             
-            if (score >= targetScore) {
-                winGame();
+            if (caught >= target) {
+                clearInterval(gameInterval);
+                setTimeout(showQuestion, 500);
             }
         }
 
-        // Update love meter
-        function updateMeter() {
-            const percentage = (score / targetScore) * 100;
-            const meter = document.getElementById('loveMeter');
-            const scoreDisplay = document.getElementById('scoreDisplay');
+        function showQuestion() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('questionScreen').style.display = 'block';
             
-            meter.style.width = percentage + '%';
-            meter.textContent = Math.round(percentage) + '%';
-            scoreDisplay.textContent = score + '/' + targetScore;
-            
-            if (percentage > 80) {
-                meter.style.background = 'linear-gradient(90deg, #ff1744, #d50000)';
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'question_shown');
             }
         }
 
-        // Win game
-        function winGame() {
-            gameActive = false;
-            clearInterval(heartInterval);
-            
-            document.querySelectorAll('.falling-heart').forEach(h => h.remove());
-            document.getElementById('instruction').style.display = 'none';
-            
-            setTimeout(() => {
-                document.getElementById('gameArea').style.display = 'none';
-                document.getElementById('valentineQuestion').style.display = 'block';
-                createConfetti();
-                
-                // Track game completion
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'game_completed', {
-                        'recipient_name': nameFromUrl || 'unknown'
-                    });
-                }
-            }, 500);
-        }
-
-        // Move No button
-        function moveNoButton() {
-            const btn = document.getElementById('noBtn');
-            const container = btn.parentElement;
-            const containerRect = container.getBoundingClientRect();
-            
-            const maxX = containerRect.width - btn.offsetWidth - 20;
-            const maxY = containerRect.height - btn.offsetHeight;
-            
-            const newX = Math.random() * maxX;
-            const newY = Math.random() * maxY;
-            
-            btn.style.position = 'absolute';
-            btn.style.left = newX + 'px';
-            btn.style.top = newY + 'px';
-            btn.textContent = ['Nope! 💕', 'Try Yes! 😊', 'Wrong button! 💝', 'Yes is better! 🌹'][Math.floor(Math.random() * 4)];
-        }
-
-        // Say Yes
-        function sayYes() {
-            document.getElementById('valentineQuestion').style.display = 'none';
+        function yesClicked() {
+            document.getElementById('questionScreen').style.display = 'none';
             document.getElementById('successScreen').style.display = 'block';
             
-            if (senderFromUrl) {
-                document.getElementById('senderNameDisplay').textContent = `From: ${decodeURIComponent(senderFromUrl)} 💌`;
-            }
-            
-            createConfetti();
-            createConfetti();
-            createConfetti();
-            
-            // Track yes response
             if (typeof gtag !== 'undefined') {
-                gtag('event', 'valentine_yes', {
-                    'recipient_name': nameFromUrl || 'unknown'
-                });
+                gtag('event', 'said_yes');
             }
         }
 
-        // Create confetti
-        function createConfetti() {
-            const colors = ['#ff6b9d', '#c44569', '#f8b500', '#ff1744', '#e91e63', '#ff69b4'];
-            
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
-                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => confetti.remove(), 4000);
-                }, i * 50);
-            }
+        function moveNo() {
+            const btn = document.getElementById('noBtn');
+            const x = Math.random() * 200 - 100;
+            const y = Math.random() * 100 - 50;
+            btn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
         }
-
-        // Initialize background hearts on load
-        createBgHearts();
     </script>
 </body>
 </html>
