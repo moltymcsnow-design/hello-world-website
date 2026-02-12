@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Will You Be My Valentine? 💝</title>
-    <!-- Google Analytics 4 -->
+    <title>Valentine Game</title>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z2XY8N25QD"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -13,486 +12,246 @@
         gtag('config', 'G-Z2XY8N25QD');
     </script>
     <style>
-        * {
+        body {
             margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            min-height: 100vh;
+        }
+        
+        #screen1 {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 350px;
+            margin: 0 auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e91e63;
+            border-radius: 8px;
+            margin: 15px 0;
             box-sizing: border-box;
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-            overflow-x: hidden;
+        
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
         }
-
-        /* Background hearts */
-        .bg-heart {
-            position: fixed;
-            font-size: 20px;
-            animation: float 15s infinite ease-in-out;
-            opacity: 0.15;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(100vh) rotate(0deg); }
-            50% { transform: translateY(-100px) rotate(180deg); }
-        }
-
-        /* SETUP SCREEN */
-        #setupScreen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+        
+        #screen2 {
+            display: none;
             padding: 20px;
-            position: relative;
-            z-index: 10;
+            text-align: center;
         }
-
-        .setup-box {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        
+        #gameBox {
+            width: 90%;
             max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .setup-box h1 {
-            color: #e91e63;
-            margin-bottom: 10px;
-            font-size: 1.8rem;
-        }
-
-        .setup-box p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .setup-box input {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            border: 2px solid #e91e63;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .setup-box button {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            background: linear-gradient(135deg, #ff6b9d, #c44569);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .share-box {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f5f5f5;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .share-box.show {
-            display: block;
-        }
-
-        .url-box {
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 0.85rem;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-        }
-
-        /* GAME SCREEN */
-        #gameScreen {
-            display: none;
-            min-height: 100vh;
-            padding: 20px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .game-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .recipient {
-            font-size: 2.2rem;
-            color: #e91e63;
-            font-weight: bold;
-        }
-
-        .game-subtitle {
-            color: #ad1457;
-            margin-top: 10px;
-        }
-
-        .progress-container {
-            width: 300px;
-            height: 40px;
-            background: rgba(255,255,255,0.6);
-            border-radius: 20px;
+            height: 350px;
+            background: rgba(255,255,255,0.8);
+            border: 3px solid #e91e63;
+            border-radius: 15px;
             margin: 20px auto;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #ff6b9d, #c44569);
-            border-radius: 20px;
-            transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
-            color: white;
-            font-weight: bold;
-        }
-
-        .game-area {
-            width: 100%;
-            max-width: 500px;
-            height: 400px;
-            background: rgba(255,255,255,0.6);
-            border-radius: 20px;
-            margin: 0 auto;
             position: relative;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
         }
-
-        .game-text {
+        
+        .heart-btn {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #880e4f;
-            font-size: 1.2rem;
-            font-weight: 600;
-            pointer-events: none;
-        }
-
-        .score {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 1.4rem;
-            color: #e91e63;
-            font-weight: bold;
-            pointer-events: none;
-        }
-
-        /* CLICKABLE HEART */
-        .heart {
-            position: absolute;
-            font-size: 36px;
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.1s;
-            z-index: 100;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .heart:active {
-            transform: scale(1.4);
-        }
-
-        /* QUESTION SCREEN */
-        #questionScreen {
-            display: none;
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .big-question {
-            font-size: 2.2rem;
-            color: #c2185b;
-            margin-bottom: 40px;
-            font-weight: bold;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            flex-wrap: wrap;
-            position: relative;
-            min-height: 80px;
-        }
-
-        .big-btn {
-            padding: 20px 50px;
-            font-size: 1.8rem;
+            width: 50px;
+            height: 50px;
+            font-size: 30px;
+            background: none;
             border: none;
-            border-radius: 50px;
             cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            padding: 0;
+            line-height: 50px;
+            z-index: 9999;
         }
-
-        .btn-yes {
-            background: linear-gradient(135deg, #ff6b9d, #c44569);
-            color: white;
-        }
-
-        .btn-no {
-            background: #e0e0e0;
-            color: #666;
-        }
-
-        /* SUCCESS SCREEN */
-        #successScreen {
+        
+        #screen3 {
             display: none;
             text-align: center;
-            padding: 60px 20px;
+            padding: 50px 20px;
         }
-
-        .success-icon {
-            font-size: 5rem;
-            margin-bottom: 20px;
+        
+        #screen4 {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
         }
-
-        .success-title {
-            font-size: 2rem;
-            color: #c2185b;
-            margin-bottom: 20px;
-            font-weight: bold;
+        
+        .big-btn {
+            padding: 20px 40px;
+            font-size: 24px;
+            margin: 10px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
         }
-
-        .success-msg {
-            font-size: 1.2rem;
-            color: #880e4f;
-            max-width: 500px;
-            margin: 0 auto 30px;
-            line-height: 1.6;
+        
+        .yes-btn {
+            background: #e91e63;
+            color: white;
         }
-
-        @media (max-width: 600px) {
-            .recipient { font-size: 1.6rem; }
-            .big-question { font-size: 1.6rem; }
-            .big-btn { font-size: 1.4rem; padding: 15px 35px; }
+        
+        .no-btn {
+            background: #ccc;
+            color: #666;
+            position: relative;
         }
     </style>
 </head>
 <body>
-    <!-- Background hearts -->
-    <div id="bgHearts"></div>
-
-    <!-- SETUP SCREEN -->
-    <div id="setupScreen">
-        <div class="setup-box">
-            <div style="font-size: 4rem; margin-bottom: 15px;">💝</div>
-            <h1>Create Your Valentine Surprise</h1>
-            <p>Who is this for?</p>
-            <input type="text" id="nameInput" placeholder="Enter their name">
-            <button onclick="createLink()">✨ Create Link</button>
-            
-            <div class="share-box" id="shareBox">
-                <p style="color: #666; margin-bottom: 10px;">Share this link:</p>
-                <div class="url-box" id="urlBox"></div>
-                <button onclick="copyLink()" style="background: #4CAF50; margin-top: 10px;">📋 Copy</button>
-                <p id="copiedText" style="color: #4CAF50; margin-top: 10px; display: none;">Copied!</p>
+    <!-- Screen 1: Enter Name -->
+    <div id="screen1">
+        <div class="box">
+            <div style="font-size: 60px;">💝</div>
+            <h2>Valentine Surprise</h2>
+            <p>Who is your Valentine?</p>
+            <input type="text" id="valentineName" placeholder="Their name">
+            <br><br>
+            <button onclick="makeLink()">Create Link</button>
+            <div id="linkBox" style="margin-top: 20px; display: none;">
+                <p>Share this link:</p>
+                <div id="theLink" style="background: #f0f0f0; padding: 10px; border-radius: 5px; word-break: break-all; font-size: 14px;"></div>
+                <button onclick="copyIt()" style="margin-top: 10px; background: #4CAF50;">Copy</button>
             </div>
         </div>
     </div>
 
-    <!-- GAME SCREEN -->
-    <div id="gameScreen">
-        <div class="game-header">
-            <div class="recipient" id="recipientName">Hey! 💕</div>
-            <div class="game-subtitle">Catch 10 hearts to unlock the question!</div>
-        </div>
-
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar">0%</div>
-        </div>
-
-        <div class="game-area" id="gameArea">
-            <div class="game-text" id="gameText">Click the hearts! ❤️</div>
-            <div class="score" id="scoreDisplay">0/10</div>
-        </div>
+    <!-- Screen 2: Game -->
+    <div id="screen2">
+        <h1 id="greeting">Hey! 💕</h1>
+        <p>Tap 10 hearts! 👇</p>
+        <p>Score: <span id="score">0</span>/10</p>
+        <div id="gameBox"></div>
     </div>
 
-    <!-- QUESTION SCREEN -->
-    <div id="questionScreen">
-        <div class="big-question">Will you be my Valentine? 🌹</div>
-        <div class="btn-row">
-            <button class="big-btn btn-yes" onclick="yesClicked()">YES! 💖</button>
-            <button class="big-btn btn-no" id="noBtn" onmouseover="moveNo()">No 🙈</button>
-        </div>
+    <!-- Screen 3: Question -->
+    <div id="screen3">
+        <h1 style="color: #e91e63; font-size: 36px;">Will you be my Valentine? 🌹</h1>
+        <br><br>
+        <button class="big-btn yes-btn" onclick="showYes()">YES! 💖</button>
+        <button class="big-btn no-btn" id="noBtn" onmouseover="moveIt()">No 🙈</button>
     </div>
 
-    <!-- SUCCESS SCREEN -->
-    <div id="successScreen">
-        <div class="success-icon">🥰💕🎉</div>
-        <div class="success-title">Yay! You said YES!</div>
-        <div class="success-msg">
-            You're amazing! Let's make this Valentine's special! 💝<br><br>
-            (I knew you'd say yes... the "No" button never had a chance 😉)
-        </div>
+    <!-- Screen 4: Success -->
+    <div id="screen4">
+        <div style="font-size: 80px;">🥰💕🎉</div>
+        <h1 style="color: #e91e63;">Yay! You said YES!</h1>
+        <p style="font-size: 20px; color: #666;">Best Valentine's ever! 💝</p>
     </div>
 
     <script>
-        // Get name from URL
-        const params = new URLSearchParams(window.location.search);
-        const name = params.get('name');
-
-        // If name exists, show game
-        if (name) {
-            document.getElementById('setupScreen').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'block';
-            document.getElementById('recipientName').textContent = 'Hey ' + decodeURIComponent(name) + '! 💕';
+        // Check URL for name
+        const urlParams = new URLSearchParams(window.location.search);
+        const nameFromUrl = urlParams.get('name');
+        
+        if (nameFromUrl) {
+            document.getElementById('screen1').style.display = 'none';
+            document.getElementById('screen2').style.display = 'block';
+            document.getElementById('greeting').textContent = 'Hey ' + decodeURIComponent(nameFromUrl) + '! 💕';
+            startTheGame();
             
-            // Track view
             if (typeof gtag !== 'undefined') {
-                gtag('event', 'game_view', { 'name': name });
-            }
-            
-            startGame();
-        }
-
-        // Create background hearts
-        function createBgHearts() {
-            const container = document.getElementById('bgHearts');
-            const hearts = ['💕', '💖', '💗', '💓', '💝'];
-            for (let i = 0; i < 15; i++) {
-                const h = document.createElement('div');
-                h.className = 'bg-heart';
-                h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-                h.style.left = Math.random() * 100 + '%';
-                h.style.animationDelay = Math.random() * 15 + 's';
-                h.style.animationDuration = (12 + Math.random() * 8) + 's';
-                container.appendChild(h);
+                gtag('event', 'page_view', { 'name': nameFromUrl });
             }
         }
-        createBgHearts();
 
-        // Setup functions
-        function createLink() {
-            const n = document.getElementById('nameInput').value.trim();
-            if (!n) {
+        function makeLink() {
+            const name = document.getElementById('valentineName').value.trim();
+            if (!name) {
                 alert('Please enter a name!');
                 return;
             }
-            const url = window.location.origin + window.location.pathname + '?name=' + encodeURIComponent(n);
-            document.getElementById('urlBox').textContent = url;
-            document.getElementById('shareBox').classList.add('show');
-            
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'link_created', { 'name': n });
-            }
+            const url = window.location.href.split('?')[0] + '?name=' + encodeURIComponent(name);
+            document.getElementById('theLink').textContent = url;
+            document.getElementById('linkBox').style.display = 'block';
         }
 
-        function copyLink() {
-            navigator.clipboard.writeText(document.getElementById('urlBox').textContent);
-            document.getElementById('copiedText').style.display = 'block';
-            setTimeout(() => document.getElementById('copiedText').style.display = 'none', 2000);
+        function copyIt() {
+            navigator.clipboard.writeText(document.getElementById('theLink').textContent);
+            alert('Copied!');
         }
 
-        // Game variables
-        let caught = 0;
-        const target = 10;
-        let gameInterval;
+        let score = 0;
+        let gameTimer;
 
-        function startGame() {
-            gameInterval = setInterval(spawnHeart, 1000);
+        function startTheGame() {
+            gameTimer = setInterval(addHeart, 800);
         }
 
-        function spawnHeart() {
-            if (caught >= target) return;
-            
-            const area = document.getElementById('gameArea');
-            const heart = document.createElement('div');
-            heart.className = 'heart';
-            heart.textContent = ['❤️', '💖', '💕', '💗', '💝'][Math.floor(Math.random() * 5)];
-            
-            // Random position within game area
-            const x = Math.random() * (area.offsetWidth - 50);
-            const y = Math.random() * (area.offsetHeight - 50);
-            heart.style.left = x + 'px';
-            heart.style.top = y + 'px';
-            
-            // Click handler
-            heart.onclick = function(e) {
-                e.stopPropagation();
-                catchHeart(this);
-            };
-            
-            // Touch handler for mobile
-            heart.ontouchstart = function(e) {
-                e.preventDefault();
-                catchHeart(this);
-            };
-            
-            area.appendChild(heart);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                if (heart.parentNode) heart.remove();
-            }, 3000);
-        }
-
-        function catchHeart(heart) {
-            heart.remove();
-            caught++;
-            
-            // Update progress
-            const pct = (caught / target) * 100;
-            document.getElementById('progressBar').style.width = pct + '%';
-            document.getElementById('progressBar').textContent = Math.round(pct) + '%';
-            document.getElementById('scoreDisplay').textContent = caught + '/' + target;
-            
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'heart_caught', { 'count': caught });
-            }
-            
-            if (caught >= target) {
-                clearInterval(gameInterval);
+        function addHeart() {
+            if (score >= 10) {
+                clearInterval(gameTimer);
                 setTimeout(showQuestion, 500);
+                return;
             }
+            
+            const box = document.getElementById('gameBox');
+            const btn = document.createElement('button');
+            btn.className = 'heart-btn';
+            btn.textContent = '❤️';
+            
+            // Random position
+            const x = Math.random() * (box.offsetWidth - 60);
+            const y = Math.random() * (box.offsetHeight - 60);
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+            
+            // CLICK HANDLER
+            btn.onclick = function() {
+                score++;
+                document.getElementById('score').textContent = score;
+                this.remove();
+                
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'heart_click', { 'score': score });
+                }
+            };
+            
+            box.appendChild(btn);
+            
+            // Remove after 2.5 seconds
+            setTimeout(() => {
+                if (btn.parentNode) btn.remove();
+            }, 2500);
         }
 
         function showQuestion() {
-            document.getElementById('gameScreen').style.display = 'none';
-            document.getElementById('questionScreen').style.display = 'block';
+            document.getElementById('screen2').style.display = 'none';
+            document.getElementById('screen3').style.display = 'block';
+        }
+
+        function showYes() {
+            document.getElementById('screen3').style.display = 'none';
+            document.getElementById('screen4').style.display = 'block';
             
             if (typeof gtag !== 'undefined') {
-                gtag('event', 'question_shown');
+                gtag('event', 'valentine_yes');
             }
         }
 
-        function yesClicked() {
-            document.getElementById('questionScreen').style.display = 'none';
-            document.getElementById('successScreen').style.display = 'block';
-            
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'said_yes');
-            }
-        }
-
-        function moveNo() {
+        function moveIt() {
             const btn = document.getElementById('noBtn');
-            const x = Math.random() * 200 - 100;
-            const y = Math.random() * 100 - 50;
-            btn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+            const offsetX = (Math.random() - 0.5) * 150;
+            const offsetY = (Math.random() - 0.5) * 100;
+            btn.style.transform = 'translate(' + offsetX + 'px, ' + offsetY + 'px)';
         }
     </script>
 </body>
