@@ -277,7 +277,11 @@
             border-radius: 20px;
             position: relative;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            overflow: hidden;
+            overflow: visible;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .game-instruction {
@@ -294,19 +298,22 @@
         /* Heart Target */
         .heart-target {
             position: absolute;
-            width: 55px;
-            height: 55px;
+            width: 60px;
+            height: 60px;
             background: linear-gradient(135deg, #ff6b9d, #e91e63);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 30px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(233,30,99,0.4);
             transition: transform 0.1s;
             border: none;
-            z-index: 100;
+            z-index: 1000;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            pointer-events: auto;
         }
 
         .heart-target::before {
@@ -609,7 +616,9 @@
         let gameActive = true;
 
         function startMiniGame() {
-            gameInterval = setInterval(spawnHeart, 900);
+            // Spawn first heart immediately
+            spawnHeart();
+            gameInterval = setInterval(spawnHeart, 1200);
         }
 
         function spawnHeart() {
@@ -618,36 +627,38 @@
             const board = document.getElementById('gameBoard');
             const heart = document.createElement('button');
             heart.className = 'heart-target';
+            heart.type = 'button';
             
             // Random position with padding
-            const padding = 60;
+            const padding = 70;
             const x = padding + Math.random() * (board.offsetWidth - padding * 2);
             const y = padding + Math.random() * (board.offsetHeight - padding * 2);
             
             heart.style.left = x + 'px';
             heart.style.top = y + 'px';
             
-            // Click/tap handler
-            heart.addEventListener('click', function(e) {
-                e.stopPropagation();
-                catchHeart(this);
-            });
-            
-            heart.addEventListener('touchstart', function(e) {
+            // Single handler for both click and touch
+            const handleTap = function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                catchHeart(this);
-            }, { passive: false });
+                catchHeart(heart);
+                return false;
+            };
+            
+            heart.onclick = handleTap;
+            heart.ontouchstart = handleTap;
+            heart.onmousedown = handleTap;
             
             board.appendChild(heart);
             
-            // Remove after 2 seconds
+            // Remove after 3 seconds (more time to tap)
             setTimeout(() => {
                 if (heart.parentNode) {
                     heart.style.opacity = '0';
+                    heart.style.transform = 'scale(0)';
                     setTimeout(() => heart.remove(), 200);
                 }
-            }, 2000);
+            }, 3000);
         }
 
         function catchHeart(heart) {
