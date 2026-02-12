@@ -299,7 +299,7 @@
 
         /* Heart Target */
         .heart-target {
-            position: absolute;
+            position: fixed !important;
             width: 60px;
             height: 60px;
             background: linear-gradient(135deg, #ff6b9d, #e91e63);
@@ -309,10 +309,10 @@
             justify-content: center;
             font-size: 30px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(233,30,99,0.4);
-            transition: transform 0.1s;
+            box-shadow: 0 4px 20px rgba(233,30,99,0.5);
+            transition: all 0.2s ease;
             border: 3px solid white;
-            z-index: 9999;
+            z-index: 99999 !important;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
             pointer-events: auto;
@@ -627,17 +627,23 @@
             if (!gameActive || score >= targetScore) return;
             
             const board = document.getElementById('gameBoard');
+            const rect = board.getBoundingClientRect();
+            
             const heart = document.createElement('button');
             heart.className = 'heart-target';
             heart.type = 'button';
             
-            // Random position with padding
+            // Calculate position relative to viewport (fixed positioning)
             const padding = 70;
-            const x = padding + Math.random() * (board.offsetWidth - padding * 2);
-            const y = padding + Math.random() * (board.offsetHeight - padding * 2);
+            const boardPadding = 10; // account for board padding/margin
+            const relX = padding + Math.random() * (rect.width - padding * 2);
+            const relY = padding + Math.random() * (rect.height - padding * 2);
             
-            heart.style.left = x + 'px';
-            heart.style.top = y + 'px';
+            // Position absolutely within the board area using fixed positioning
+            heart.style.position = 'fixed';
+            heart.style.left = (rect.left + relX) + 'px';
+            heart.style.top = (rect.top + relY) + 'px';
+            heart.style.zIndex = '99999';
             
             // Single handler for both click and touch
             const handleTap = function(e) {
@@ -649,11 +655,10 @@
             
             heart.onclick = handleTap;
             heart.ontouchstart = handleTap;
-            heart.onmousedown = handleTap;
             
-            board.appendChild(heart);
+            document.body.appendChild(heart);
             
-            // Remove after 3 seconds (more time to tap)
+            // Remove after 3 seconds
             setTimeout(() => {
                 if (heart.parentNode) {
                     heart.style.opacity = '0';
