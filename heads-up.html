@@ -83,6 +83,59 @@
             font-size: 2.5rem;
         }
 
+        /* Mode Selector */
+        .mode-selector {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+
+        .mode-label {
+            color: rgba(255,255,255,0.8);
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 15px 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .mode-btn.active {
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .mode-btn .mode-icon {
+            font-size: 1.8rem;
+        }
+
+        .mode-btn span:nth-child(2) {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .mode-btn small {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
         /* Instructions Screen */
         .instructions-screen h2 {
             color: white;
@@ -158,6 +211,40 @@
         .game-screen {
             background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
             position: relative;
+        }
+
+        .game-screen.landscape {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .game-screen.landscape .word-card {
+            transform: rotate(-90deg);
+        }
+
+        .game-screen.landscape .game-header {
+            transform: rotate(-90deg);
+            transform-origin: top left;
+            width: 100vh;
+            top: 50%;
+            left: 20px;
+            padding: 0;
+        }
+
+        .game-screen.landscape .timer {
+            font-size: 4rem;
+        }
+
+        .game-screen.landscape .score {
+            font-size: 2rem;
+        }
+
+        .game-screen.landscape .gesture-hints {
+            transform: rotate(-90deg);
+            transform-origin: bottom center;
+            width: 100vh;
+            bottom: 50%;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .game-header {
@@ -489,6 +576,23 @@
     <div class="screen home-screen active" id="homeScreen">
         <h1>🎯 Heads Up!</h1>
         <p class="subtitle">Guess the word from your friend's clues</p>
+        
+        <div class="mode-selector">
+            <p class="mode-label">Select Mode:</p>
+            <div class="mode-buttons">
+                <button class="mode-btn active" id="portraitMode" data-mode="portrait">
+                    <span class="mode-icon">📱</span>
+                    <span>Portrait</span>
+                    <small>Hold to forehead</small>
+                </button>
+                <button class="mode-btn" id="landscapeMode" data-mode="landscape">
+                    <span class="mode-icon">📱↔️</span>
+                    <span>Landscape</span>
+                    <small>Tabletop mode</small>
+                </button>
+            </div>
+        </div>
+        
         <div class="category-grid">
             <button class="category-btn" data-category="animals">
                 <span class="emoji">🦁</span>
@@ -528,21 +632,36 @@
     <!-- Instructions Screen -->
     <div class="screen instructions-screen" id="instructionsScreen">
         <h2>How to Play</h2>
-        <div class="instruction-card">
+        <div class="instruction-card" id="portraitInstructions">
             <h3>📱 Hold to Forehead</h3>
             <p>Hold your phone against your forehead so your friends can see the screen</p>
         </div>
+        <div class="instruction-card" id="landscapeInstructions" style="display: none;">
+            <h3>📱 Place on Table</h3>
+            <p>Place your phone on a table in landscape mode so everyone can see</p>
+        </div>
         <div class="instruction-card">
             <h3>🔄 Flip Gestures</h3>
-            <p>Your friends give you clues. Flip the phone to answer:</p>
-            <div class="gesture-demo">
+            <p id="gestureTextPortrait">Your friends give you clues. Flip the phone to answer:</p>
+            <p id="gestureTextLandscape" style="display: none;">Your friends give you clues. Tilt the phone to answer:</p>
+            <div class="gesture-demo" id="portraitGestures">
                 <div class="gesture">
                     <div class="gesture-icon">⬇️</div>
-                    <div>Down = Correct</div>
+                    <div>Flip Down = Correct</div>
                 </div>
                 <div class="gesture">
                     <div class="gesture-icon" style="animation-direction: reverse;">⬆️</div>
-                    <div>Up = Skip</div>
+                    <div>Flip Up = Skip</div>
+                </div>
+            </div>
+            <div class="gesture-demo" id="landscapeGestures" style="display: none;">
+                <div class="gesture">
+                    <div class="gesture-icon">⬅️</div>
+                    <div>Tilt Left = Correct</div>
+                </div>
+                <div class="gesture">
+                    <div class="gesture-icon">➡️</div>
+                    <div>Tilt Right = Skip</div>
                 </div>
             </div>
         </div>
@@ -571,13 +690,13 @@
         </div>
 
         <div class="gesture-hints">
-            <div class="gesture-hint correct">
+            <div class="gesture-hint correct" id="correctHint">
                 <span>✓</span>
-                <span>Flip Down</span>
+                <span id="correctHintText">Flip Down</span>
             </div>
-            <div class="gesture-hint skip">
+            <div class="gesture-hint skip" id="skipHint">
                 <span>✗</span>
-                <span>Flip Up</span>
+                <span id="skipHintText">Flip Up</span>
             </div>
         </div>
     </div>
@@ -618,7 +737,9 @@
         let wordHistory = [];
         let motionEnabled = false;
         let lastBeta = 0;
+        let lastGamma = 0;
         let cooldown = false;
+        let gameMode = 'portrait'; // 'portrait' or 'landscape'
 
         // DOM Elements
         const screens = {
@@ -635,19 +756,45 @@
             screens[screenName].classList.add('active');
         }
 
+        // Mode Selection
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                gameMode = btn.dataset.mode;
+            });
+        });
+
         // Category Selection
         document.querySelectorAll('.category-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 currentCategory = btn.dataset.category;
-                
+
                 // Shuffle and select words
                 const allWords = [...wordsDB[currentCategory]];
                 for (let i = allWords.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [allWords[i], allWords[j]] = [allWords[j], allWords[i]];
                 }
-                currentWords = allWords.slice(0, 20);
-                
+                currentWords = allWords.slice(0, 20];
+
+                // Show correct instructions based on mode
+                if (gameMode === 'portrait') {
+                    document.getElementById('portraitInstructions').style.display = 'block';
+                    document.getElementById('landscapeInstructions').style.display = 'none';
+                    document.getElementById('gestureTextPortrait').style.display = 'block';
+                    document.getElementById('gestureTextLandscape').style.display = 'none';
+                    document.getElementById('portraitGestures').style.display = 'flex';
+                    document.getElementById('landscapeGestures').style.display = 'none';
+                } else {
+                    document.getElementById('portraitInstructions').style.display = 'none';
+                    document.getElementById('landscapeInstructions').style.display = 'block';
+                    document.getElementById('gestureTextPortrait').style.display = 'none';
+                    document.getElementById('gestureTextLandscape').style.display = 'block';
+                    document.getElementById('portraitGestures').style.display = 'none';
+                    document.getElementById('landscapeGestures').style.display = 'flex';
+                }
+
                 showScreen('permission');
             });
         });
@@ -693,6 +840,25 @@
             document.getElementById('scoreDisplay').textContent = '0 ✓';
             document.getElementById('timer').textContent = '60';
             document.getElementById('timer').classList.remove('pulse');
+            
+            // Apply landscape mode if selected
+            const gameScreen = document.getElementById('gameScreen');
+            if (gameMode === 'landscape') {
+                gameScreen.classList.add('landscape');
+                document.getElementById('correctHintText').textContent = 'Tilt Left';
+                document.getElementById('skipHintText').textContent = 'Tilt Right';
+                // Lock to landscape orientation if supported
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(() => {});
+                }
+            } else {
+                gameScreen.classList.remove('landscape');
+                document.getElementById('correctHintText').textContent = 'Flip Down';
+                document.getElementById('skipHintText').textContent = 'Flip Up';
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('portrait').catch(() => {});
+                }
+            }
             
             showScreen('game');
             showNextWord();
@@ -781,17 +947,31 @@
                 if (!motionEnabled || document.getElementById('gameScreen').classList.contains('active') === false) return;
                 
                 const beta = event.beta; // -180 to 180 (front/back tilt)
+                const gamma = event.gamma; // -90 to 90 (left/right tilt)
                 
-                // Detect flip down (correct) - phone tilted forward past 60 degrees
-                if (beta > 60 && lastBeta <= 60 && !cooldown) {
-                    handleCorrect();
+                if (gameMode === 'portrait') {
+                    // Portrait: Use beta (front/back tilt)
+                    // Detect flip down (correct) - phone tilted forward past 60 degrees
+                    if (beta > 60 && lastBeta <= 60 && !cooldown) {
+                        handleCorrect();
+                    }
+                    // Detect flip up (skip) - phone tilted backward past -60 degrees  
+                    else if (beta < -60 && lastBeta >= -60 && !cooldown) {
+                        handleSkip();
+                    }
+                    lastBeta = beta;
+                } else {
+                    // Landscape: Use gamma (left/right tilt)
+                    // Tilt left (correct) - phone tilted left past 45 degrees
+                    if (gamma > 45 && lastGamma <= 45 && !cooldown) {
+                        handleCorrect();
+                    }
+                    // Tilt right (skip) - phone tilted right past -45 degrees
+                    else if (gamma < -45 && lastGamma >= -45 && !cooldown) {
+                        handleSkip();
+                    }
+                    lastGamma = gamma;
                 }
-                // Detect flip up (skip) - phone tilted backward past -60 degrees  
-                else if (beta < -60 && lastBeta >= -60 && !cooldown) {
-                    handleSkip();
-                }
-                
-                lastBeta = beta;
             });
         }
 
