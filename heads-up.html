@@ -847,6 +847,8 @@
                 gameScreen.classList.add('landscape');
                 document.getElementById('correctHintText').textContent = 'Tilt Left';
                 document.getElementById('skipHintText').textContent = 'Tilt Right';
+                // Hide orientation warning since we're in landscape mode
+                document.getElementById('orientationWarning').classList.remove('show');
                 // Lock to landscape orientation if supported
                 if (screen.orientation && screen.orientation.lock) {
                     screen.orientation.lock('landscape').catch(() => {});
@@ -1031,9 +1033,11 @@
             setTimeout(() => confetti.remove(), 4000);
         }
 
-        // Orientation check
+        // Orientation check - only show warning in portrait mode
         window.addEventListener('orientationchange', () => {
-            if (window.orientation === 90 || window.orientation === -90) {
+            const isLandscape = window.orientation === 90 || window.orientation === -90;
+            // Only show warning if phone is landscape but game is in portrait mode
+            if (isLandscape && gameMode !== 'landscape') {
                 document.getElementById('orientationWarning').classList.add('show');
             } else {
                 document.getElementById('orientationWarning').classList.remove('show');
