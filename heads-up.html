@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Heads Up! Web</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Home Screen */
+        .home-screen h1 {
+            font-size: 3rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .home-screen .subtitle {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .category-btn {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 25px 15px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-btn:hover, .category-btn:active {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .category-btn .emoji {
+            font-size: 2.5rem;
+        }
+
+        /* Instructions Screen */
+        .instructions-screen h2 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .instruction-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 400px;
+            color: white;
+        }
+
+        .instruction-card h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instruction-card p {
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .gesture-demo {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .gesture {
+            text-align: center;
+        }
+
+        .gesture-icon {
+            font-size: 3rem;
+            margin-bottom: 5px;
+            animation: tilt 2s infinite;
+        }
+
+        @keyframes tilt {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(45deg); }
+        }
+
+        .start-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(76,175,80,0.4);
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover, .start-btn:active {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(76,175,80,0.5);
+        }
+
+        /* Game Screen */
+        .game-screen {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            position: relative;
+        }
+
+        .game-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            z-index: 10;
+        }
+
+        .timer {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .score {
+            font-size: 1.5rem;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+
+        .word-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 90%;
+            width: 350px;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transform-style: preserve-3d;
+            transition: transform 0.3s;
+        }
+
+        .word-card.flip-down {
+            animation: flipDown 0.5s;
+        }
+
+        .word-card.flip-up {
+            animation: flipUp 0.5s;
+        }
+
+        @keyframes flipDown {
+            0% { transform: rotateX(0); }
+            50% { transform: rotateX(-90deg); }
+            100% { transform: rotateX(0); }
+        }
+
+        @keyframes flipUp {
+            0% { transform: rotateX(0); }
+            50% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0); }
+        }
+
+        .word {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .word-category {
+            color: #888;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .gesture-hints {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+
+        .gesture-hint {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gesture-hint.correct {
+            color: #4CAF50;
+        }
+
+        .gesture-hint.skip {
+            color: #ff9800;
+        }
+
+        /* Touch Controls Overlay */
+        .touch-controls {
+            position: absolute;
+            top: 80px;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            display: flex;
+            z-index: 5;
+        }
+
+        .touch-zone {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .touch-zone:active {
+            opacity: 0.3;
+        }
+
+        .touch-zone.correct-zone {
+            background: linear-gradient(to right, transparent, #4CAF50);
+        }
+
+        .touch-zone.skip-zone {
+            background: linear-gradient(to left, transparent, #ff9800);
+        }
+
+        .touch-feedback {
+            font-size: 4rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .touch-zone:active .touch-feedback {
+            opacity: 1;
+        }
+
+        /* Results Screen */
+        .results-screen {
+            text-align: center;
+        }
+
+        .results-screen h2 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        .final-score {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .final-score .number {
+            font-size: 5rem;
+            font-weight: 700;
+        }
+
+        .final-score .label {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .word-list {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .word-list h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .word-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .word-item.correct {
+            color: #4CAF50;
+        }
+
+        .word-item.skipped {
+            color: #ff9800;
+        }
+
+        .play-again-btn {
+            background: white;
+            color: #764ba2;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .play-again-btn:hover, .play-again-btn:active {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Permission Screen */
+        .permission-screen {
+            text-align: center;
+        }
+
+        .permission-screen h2 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .permission-screen p {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 30px;
+            max-width: 300px;
+        }
+
+        .permission-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .skip-permission {
+            margin-top: 15px;
+            color: rgba(255,255,255,0.6);
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        /* Orientation Warning */
+        .orientation-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .orientation-warning.show {
+            display: flex;
+        }
+
+        .orientation-warning .phone-icon {
+            font-size: 5rem;
+            animation: rotatePhone 2s infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes rotatePhone {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+        }
+
+        /* Pulse animation for timer */
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Orientation Warning -->
+    <div class="orientation-warning" id="orientationWarning">
+        <div class="phone-icon">📱</div>
+        <h2>Please Rotate Your Phone</h2>
+        <p>This game works best in portrait mode</p>
+    </div>
+
+    <!-- Home Screen -->
+    <div class="screen home-screen active" id="homeScreen">
+        <h1>🎯 Heads Up!</h1>
+        <p class="subtitle">Guess the word from your friend's clues</p>
+        <div class="category-grid">
+            <button class="category-btn" data-category="animals">
+                <span class="emoji">🦁</span>
+                <span>Animals</span>
+            </button>
+            <button class="category-btn" data-category="movies">
+                <span class="emoji">🎬</span>
+                <span>Movies</span>
+            </button>
+            <button class="category-btn" data-category="food">
+                <span class="emoji">🍕</span>
+                <span>Food</span>
+            </button>
+            <button class="category-btn" data-category="places">
+                <span class="emoji">🗽</span>
+                <span>Places</span>
+            </button>
+            <button class="category-btn" data-category="sports">
+                <span class="emoji">⚽</span>
+                <span>Sports</span>
+            </button>
+            <button class="category-btn" data-category="random">
+                <span class="emoji">🎲</span>
+                <span>Random</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Permission Screen -->
+    <div class="screen permission-screen" id="permissionScreen">
+        <h2>📱 Enable Motion Controls</h2>
+        <p>For the best experience, allow access to device motion to detect flip gestures</p>
+        <button class="permission-btn" id="enableMotion">Enable Motion</button>
+        <button class="permission-btn skip-permission" id="skipMotion">Use Touch Controls</button>
+    </div>
+
+    <!-- Instructions Screen -->
+    <div class="screen instructions-screen" id="instructionsScreen">
+        <h2>How to Play</h2>
+        <div class="instruction-card">
+            <h3>📱 Hold to Forehead</h3>
+            <p>Hold your phone against your forehead so your friends can see the screen</p>
+        </div>
+        <div class="instruction-card">
+            <h3>🔄 Flip Gestures</h3>
+            <p>Your friends give you clues. Flip the phone to answer:</p>
+            <div class="gesture-demo">
+                <div class="gesture">
+                    <div class="gesture-icon">⬇️</div>
+                    <div>Down = Correct</div>
+                </div>
+                <div class="gesture">
+                    <div class="gesture-icon" style="animation-direction: reverse;">⬆️</div>
+                    <div>Up = Skip</div>
+                </div>
+            </div>
+        </div>
+        <button class="start-btn" id="startGame">Start Game!</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div class="screen game-screen" id="gameScreen">
+        <div class="game-header">
+            <div class="timer" id="timer">60</div>
+            <div class="score" id="scoreDisplay">0 ✓</div>
+        </div>
+
+        <div class="word-card" id="wordCard">
+            <div class="word" id="wordText">Ready?</div>
+            <div class="word-category" id="wordCategory">Category</div>
+        </div>
+
+        <div class="touch-controls">
+            <div class="touch-zone correct-zone" id="correctZone">
+                <div class="touch-feedback">✓</div>
+            </div>
+            <div class="touch-zone skip-zone" id="skipZone">
+                <div class="touch-feedback">✗</div>
+            </div>
+        </div>
+
+        <div class="gesture-hints">
+            <div class="gesture-hint correct">
+                <span>✓</span>
+                <span>Flip Down</span>
+            </div>
+            <div class="gesture-hint skip">
+                <span>✗</span>
+                <span>Flip Up</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="screen results-screen" id="resultsScreen">
+        <h2>🎉 Time's Up!</h2>
+        <div class="final-score">
+            <div class="number" id="finalScore">0</div>
+            <div class="label">Correct Guesses</div>
+        </div>
+        <div class="word-list" id="wordList">
+            <h3>Your Words</h3>
+            <div id="wordListContent"></div>
+        </div>
+        <button class="play-again-btn" id="playAgain">Play Again</button>
+    </div>
+
+    <script>
+        // Word Database
+        const wordsDB = {
+            animals: ['Lion', 'Elephant', 'Giraffe', 'Penguin', 'Dolphin', 'Tiger', 'Kangaroo', 'Panda', 'Zebra', 'Monkey', 'Cheetah', 'Octopus', 'Koala', 'Hippopotamus', 'Crocodile', 'Peacock', 'Flamingo', 'Rhinoceros', 'Chimpanzee', 'Polar Bear'],
+            movies: ['Titanic', 'The Dark Knight', 'Avengers', 'Jurassic Park', 'Frozen', 'Harry Potter', 'The Lion King', 'Spider-Man', 'Star Wars', 'Forrest Gump', 'Inception', 'The Matrix', 'Avatar', 'Finding Nemo', 'The Godfather', 'Toy Story', 'Black Panther', 'Joker', 'La La Land', 'Interstellar'],
+            food: ['Pizza', 'Sushi', 'Burger', 'Tacos', 'Pasta', 'Ice Cream', 'Chocolate', 'Pancakes', 'Donuts', 'Steak', 'Salad', 'Sandwich', 'Fried Chicken', 'Ramen', 'Burrito', 'Croissant', 'Cheesecake', 'Barbecue', 'Dim Sum', 'Curry'],
+            places: ['Eiffel Tower', 'Great Wall of China', 'Statue of Liberty', 'Taj Mahal', 'Pyramids of Giza', 'Sydney Opera House', 'Mount Everest', 'Grand Canyon', 'Colosseum', 'Machu Picchu', 'Times Square', 'Big Ben', 'Niagara Falls', 'Santorini', 'Dubai', 'Paris', 'London', 'New York', 'Tokyo', 'Bali'],
+            sports: ['Basketball', 'Soccer', 'Tennis', 'Cricket', 'Swimming', 'Baseball', 'Golf', 'Rugby', 'Boxing', 'Volleyball', 'Hockey', 'Formula 1', 'Gymnastics', 'Skiing', 'Surfing', 'Cycling', 'Wrestling', 'Badminton', 'Table Tennis', 'Skateboarding'],
+            random: ['Einstein', 'iPhone', 'Rainbow', 'Christmas', 'Unicorn', 'Rainforest', 'Facebook', 'Superman', 'Bitcoin', 'Karaoke', 'Ninja', 'Pirate', 'Robot', 'Alien', 'Vampire', 'Zombie', 'Wizard', 'Dinosaur', 'Mermaid', 'Dragon']
+        };
+
+        // Game State
+        let currentCategory = '';
+        let currentWords = [];
+        let currentWordIndex = 0;
+        let score = 0;
+        let timeLeft = 60;
+        let gameInterval = null;
+        let timerInterval = null;
+        let wordHistory = [];
+        let motionEnabled = false;
+        let lastBeta = 0;
+        let cooldown = false;
+
+        // DOM Elements
+        const screens = {
+            home: document.getElementById('homeScreen'),
+            permission: document.getElementById('permissionScreen'),
+            instructions: document.getElementById('instructionsScreen'),
+            game: document.getElementById('gameScreen'),
+            results: document.getElementById('resultsScreen')
+        };
+
+        // Navigation
+        function showScreen(screenName) {
+            Object.values(screens).forEach(s => s.classList.remove('active'));
+            screens[screenName].classList.add('active');
+        }
+
+        // Category Selection
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentCategory = btn.dataset.category;
+                
+                // Shuffle and select words
+                const allWords = [...wordsDB[currentCategory]];
+                for (let i = allWords.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [allWords[i], allWords[j]] = [allWords[j], allWords[i]];
+                }
+                currentWords = allWords.slice(0, 20);
+                
+                showScreen('permission');
+            });
+        });
+
+        // Motion Permission
+        document.getElementById('enableMotion').addEventListener('click', async () => {
+            if (typeof DeviceOrientationEvent !== 'undefined' && 
+                typeof DeviceOrientationEvent.requestPermission === 'function') {
+                try {
+                    const permission = await DeviceOrientationEvent.requestPermission();
+                    if (permission === 'granted') {
+                        motionEnabled = true;
+                        startMotionDetection();
+                    }
+                } catch (e) {
+                    console.log('Motion permission denied');
+                }
+            } else {
+                motionEnabled = true;
+                startMotionDetection();
+            }
+            showScreen('instructions');
+        });
+
+        document.getElementById('skipMotion').addEventListener('click', () => {
+            motionEnabled = false;
+            showScreen('instructions');
+        });
+
+        // Start Game
+        document.getElementById('startGame').addEventListener('click', startGame);
+        document.getElementById('playAgain').addEventListener('click', () => {
+            showScreen('home');
+        });
+
+        function startGame() {
+            score = 0;
+            timeLeft = 60;
+            currentWordIndex = 0;
+            wordHistory = [];
+            cooldown = false;
+            
+            document.getElementById('scoreDisplay').textContent = '0 ✓';
+            document.getElementById('timer').textContent = '60';
+            document.getElementById('timer').classList.remove('pulse');
+            
+            showScreen('game');
+            showNextWord();
+            
+            // Start Timer
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                
+                if (timeLeft <= 10) {
+                    document.getElementById('timer').classList.add('pulse');
+                }
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function showNextWord() {
+            if (currentWordIndex >= currentWords.length) {
+                // Shuffle and reuse if we run out
+                currentWordIndex = 0;
+                for (let i = currentWords.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [currentWords[i], currentWords[j]] = [currentWords[j], currentWords[i]];
+                }
+            }
+            
+            const word = currentWords[currentWordIndex];
+            document.getElementById('wordText').textContent = word;
+            document.getElementById('wordCategory').textContent = currentCategory === 'random' ? 'Random' : currentCategory;
+            
+            // Remove animation classes
+            document.getElementById('wordCard').classList.remove('flip-down', 'flip-up');
+        }
+
+        function handleCorrect() {
+            if (cooldown) return;
+            cooldown = true;
+            
+            wordHistory.push({ word: currentWords[currentWordIndex], correct: true });
+            score++;
+            document.getElementById('scoreDisplay').textContent = score + ' ✓';
+            
+            document.getElementById('wordCard').classList.add('flip-down');
+            
+            setTimeout(() => {
+                currentWordIndex++;
+                showNextWord();
+                cooldown = false;
+            }, 500);
+        }
+
+        function handleSkip() {
+            if (cooldown) return;
+            cooldown = true;
+            
+            wordHistory.push({ word: currentWords[currentWordIndex], correct: false });
+            
+            document.getElementById('wordCard').classList.add('flip-up');
+            
+            setTimeout(() => {
+                currentWordIndex++;
+                showNextWord();
+                cooldown = false;
+            }, 500);
+        }
+
+        // Touch Controls
+        document.getElementById('correctZone').addEventListener('click', handleCorrect);
+        document.getElementById('correctZone').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleCorrect();
+        });
+
+        document.getElementById('skipZone').addEventListener('click', handleSkip);
+        document.getElementById('skipZone').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleSkip();
+        });
+
+        // Motion Detection
+        function startMotionDetection() {
+            window.addEventListener('deviceorientation', (event) => {
+                if (!motionEnabled || document.getElementById('gameScreen').classList.contains('active') === false) return;
+                
+                const beta = event.beta; // -180 to 180 (front/back tilt)
+                
+                // Detect flip down (correct) - phone tilted forward past 60 degrees
+                if (beta > 60 && lastBeta <= 60 && !cooldown) {
+                    handleCorrect();
+                }
+                // Detect flip up (skip) - phone tilted backward past -60 degrees  
+                else if (beta < -60 && lastBeta >= -60 && !cooldown) {
+                    handleSkip();
+                }
+                
+                lastBeta = beta;
+            });
+        }
+
+        // Device Motion (accelerometer) as backup
+        window.addEventListener('devicemotion', (event) => {
+            if (!motionEnabled || cooldown) return;
+            
+            const acc = event.accelerationIncludingGravity;
+            if (!acc) return;
+            
+            // Detect sudden flip motion
+            const totalAcc = Math.sqrt(acc.x ** 2 + acc.y ** 2 + acc.z ** 2);
+            
+            // Quick motion detection for flip
+            if (totalAcc > 25) {
+                // Determine direction based on which axis changed most
+                if (Math.abs(acc.y) > Math.abs(acc.x)) {
+                    if (acc.y > 5) {
+                        handleCorrect();
+                    } else if (acc.y < -5) {
+                        handleSkip();
+                    }
+                }
+            }
+        });
+
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            document.getElementById('finalScore').textContent = score;
+            
+            const wordListHTML = wordHistory.map(item => `
+                <div class="word-item ${item.correct ? 'correct' : 'skipped'}">
+                    <span>${item.word}</span>
+                    <span>${item.correct ? '✓' : '✗'}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('wordListContent').innerHTML = wordListHTML;
+            
+            // Confetti effect
+            for (let i = 0; i < 50; i++) {
+                createConfetti();
+            }
+            
+            showScreen('results');
+        }
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 4000);
+        }
+
+        // Orientation check
+        window.addEventListener('orientationchange', () => {
+            if (window.orientation === 90 || window.orientation === -90) {
+                document.getElementById('orientationWarning').classList.add('show');
+            } else {
+                document.getElementById('orientationWarning').classList.remove('show');
+            }
+        });
+
+        // Keyboard controls for desktop testing
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('gameScreen').classList.contains('active')) return;
+            
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                handleCorrect();
+            } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                handleSkip();
+            }
+        });
+
+        // Prevent zoom on double tap
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('gesturestart', (e) => {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
